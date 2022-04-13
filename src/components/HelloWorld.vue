@@ -2,8 +2,7 @@
 type Props = {
   msg: string
 }
-
-defineProps<Props>()
+const props = defineProps<Props>()
 </script>
 
 <template>
