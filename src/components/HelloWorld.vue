@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { defineProps } from 'vue'
+type Props = {
+  msg: string
+}
 
-defineProps<{
-  msg: String
-}>()
+defineProps<Props>()
 </script>
 
 <template>
