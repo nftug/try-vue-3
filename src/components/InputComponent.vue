@@ -18,6 +18,12 @@ const handleClickButton = () => {
     inputValue.value = ''
   }
 }
+
+const testMethod = () => {
+  console.log('testMethod')
+}
+
+defineExpose({ testMethod })
 </script>
 
 <template>
