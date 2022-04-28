@@ -23,7 +23,7 @@ onMounted(() => {
 
 <template>
   <v-container>
-    <InputComponent ref="inputComponent" @add="handleAddItem" />
+    <InputComponent ref="inputComponent" :max="10" @add="handleAddItem" />
     <ListComponent :items="items" @delete="handleDeleteItem" />
   </v-container>
 </template>

@@ -28,10 +28,11 @@ const handleClickDelete = (id: string) => {
       <tr v-for="item in props.items" :key="item.id">
         <td>{{ item.value }}</td>
         <td>
-          <v-btn small @click="handleClickDelete(item.id)">
-            <v-icon left>mdi-delete</v-icon>
-            削除する
-          </v-btn>
+          <v-btn
+            icon="mdi-delete"
+            size="small"
+            @click="handleClickDelete(item.id)"
+          ></v-btn>
         </td>
       </tr>
     </tbody>
