@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { Item } from '@/interfaces/index'
 import { v4 as uuid } from 'uuid'
 import { useField, useForm, useIsFormValid } from 'vee-validate'
+import { useContentsStore } from '@/store/contents'
 
 // Props & Emits
 const props = defineProps<{ max: number }>()
-const emit = defineEmits<{
-  (e: 'add', item: Item): void
-}>()
+
+// store
+const store = useContentsStore()
 
 // フォーム関連
 const { handleSubmit, resetForm } = useForm({
@@ -20,18 +20,17 @@ const { handleSubmit, resetForm } = useForm({
       return true
     },
     isAgree(v: boolean) {
-      if (!v) return '同意してください'
-      return true
+      return v || '同意してください'
     },
   },
 })
+const isValid = useIsFormValid()
 const { value: contentValue, errorMessage: contentError } = useField('content')
 const { value: isAgreeValue, errorMessage: isAgreeError } = useField('isAgree')
-const isValid = useIsFormValid()
 
 const handleClickButton = handleSubmit((fields) => {
   const newItem = { id: uuid(), value: fields.content }
-  emit('add', newItem)
+  store.addItem(newItem)
   resetForm()
 })
 

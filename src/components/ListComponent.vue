@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import type { Item } from '@/interfaces'
+import { useContentsStore } from '@/store/contents'
 
-interface Props {
-  items: Item[]
-}
-const props = defineProps<Props>()
-
-interface Emits {
-  (e: 'delete', id: string): void
-}
-const emit = defineEmits<Emits>()
+const store = useContentsStore()
 
 const handleClickDelete = (id: string) => {
-  emit('delete', id)
+  store.deleteItem(id)
 }
 </script>
 
@@ -25,7 +17,7 @@ const handleClickDelete = (id: string) => {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in props.items" :key="item.id">
+      <tr v-for="item in store.items" :key="item.id">
         <td>{{ item.value }}</td>
         <td>
           <v-btn
