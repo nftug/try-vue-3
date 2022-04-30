@@ -4,7 +4,7 @@ import { useField, useForm, useIsFormValid } from 'vee-validate'
 import { useContentsStore } from '@/store/contents'
 
 // Props & Emits
-const props = defineProps<{ max: number }>()
+const props = withDefaults(defineProps<{ max?: number }>(), { max: 10 })
 
 // store
 const store = useContentsStore()

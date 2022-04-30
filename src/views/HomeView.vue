@@ -12,7 +12,7 @@ onMounted(() => {
 
 <template>
   <v-container>
-    <InputComponent ref="inputComponent" :max="10" />
+    <InputComponent ref="inputComponent" />
     <ListComponent />
   </v-container>
 </template>
