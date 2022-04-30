@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { v4 as uuid } from 'uuid'
 import { useField, useForm, useIsFormValid } from 'vee-validate'
 import { useContentsStore } from '@/store/contents'
 
@@ -28,8 +27,8 @@ const isValid = useIsFormValid()
 const { value: contentValue, errorMessage: contentError } = useField('content')
 const { value: isAgreeValue, errorMessage: isAgreeError } = useField('isAgree')
 
-const handleClickButton = handleSubmit((fields) => {
-  const newItem = { id: uuid(), value: fields.content }
+const handleClickButton = handleSubmit(({ content }) => {
+  const newItem = { id: undefined, content }
   store.addItem(newItem)
   resetForm()
 })

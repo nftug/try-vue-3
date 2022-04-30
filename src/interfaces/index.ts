@@ -1,4 +1,6 @@
+export type Id = string | undefined
+
 export interface Item {
-  id: string
-  value: string
+  id: Id
+  content: string
 }

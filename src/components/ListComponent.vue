@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useContentsStore } from '@/store/contents'
+import type { Id } from '@/interfaces'
 
 const store = useContentsStore()
 
-const handleClickDelete = (id: string) => {
+const handleClickDelete = (id: Id) => {
   store.deleteItem(id)
 }
 </script>
@@ -18,7 +19,7 @@ const handleClickDelete = (id: string) => {
     </thead>
     <tbody>
       <tr v-for="item in store.items" :key="item.id">
-        <td>{{ item.value }}</td>
+        <td>{{ item.content }}</td>
         <td>
           <v-btn
             icon="mdi-delete"

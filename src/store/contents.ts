@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import type { Item } from '@/interfaces'
+import { v4 as uuid } from 'uuid'
+import type { Item, Id } from '@/interfaces'
 
 export const useContentsStore = defineStore('contents', {
   state: () => ({
@@ -7,11 +8,13 @@ export const useContentsStore = defineStore('contents', {
   }),
   actions: {
     addItem(item: Item) {
-      this.items.push(item)
+      this.items.push({ ...item, id: uuid() })
     },
-    deleteItem(id: string) {
-      const index = this.items.findIndex((v) => v.id === id)
-      this.items.splice(index, 1)
+    deleteItem(id: Id) {
+      if (typeof id === 'string') {
+        const index = this.items.findIndex((v) => v.id === id)
+        this.items.splice(index, 1)
+      }
     },
   },
 })
