@@ -39,7 +39,7 @@ defineExpose({ testMethod })
 </script>
 
 <template>
-  <v-form v-model="isValid" @submit.prevent="handleClickButton">
+  <form @submit.prevent="handleClickButton">
     <v-text-field
       v-model="contentValue"
       autocomplete="off"
@@ -53,5 +53,5 @@ defineExpose({ testMethod })
       </v-btn>
       <v-btn class="ma-2" @click="resetForm()">リセット</v-btn>
     </div>
-  </v-form>
+  </form>
 </template>
