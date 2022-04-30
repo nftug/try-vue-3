@@ -8,7 +8,7 @@ export const useContentsStore = defineStore('contents', {
   }),
   actions: {
     addItem(item: Item) {
-      this.items.push({ ...item, id: uuid() })
+      this.items.push({ ...item, id: item.id || uuid() })
     },
     deleteItem(id: Id) {
       if (typeof id === 'string') {

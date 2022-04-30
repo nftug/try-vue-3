@@ -3,7 +3,10 @@ import { useField, useForm, useIsFormValid } from 'vee-validate'
 import { useContentsStore } from '@/store/contents'
 
 // Props & Emits
-const props = withDefaults(defineProps<{ max?: number }>(), { max: 10 })
+interface Props {
+  max?: number
+}
+const props = withDefaults(defineProps<Props>(), { max: 10 })
 
 // store
 const store = useContentsStore()
