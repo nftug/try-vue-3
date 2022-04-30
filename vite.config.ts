@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vuetify from '@vuetify/vite-plugin'
+import legacy from '@vitejs/plugin-legacy'
+
+const path = require('path')
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -10,11 +13,15 @@ export default defineConfig({
     vuetify({
       autoImport: true,
     }),
+    legacy({
+      targets: ['ie >= 11'],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+    }),
   ],
   define: { 'process.env': {} },
   resolve: {
     alias: {
-      '@': require('path').resolve(__dirname, 'src'),
+      '@': path.resolve(__dirname, 'src'),
     },
   },
   /* remove the need to specify .vue files https://vitejs.dev/config/#resolve-extensions

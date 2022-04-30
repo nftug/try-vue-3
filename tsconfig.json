@@ -2,9 +2,8 @@
   "extends": "@vue/tsconfig/tsconfig.web.json",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "downlevelIteration": true,
+    "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
