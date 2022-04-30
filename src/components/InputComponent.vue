@@ -3,33 +3,34 @@ import type { Item } from '@/interfaces/index'
 import { v4 as uuid } from 'uuid'
 import { useField, useForm, useIsFormValid } from 'vee-validate'
 
+// Props & Emits
 const props = defineProps<{ max: number }>()
-interface Emits {
+const emit = defineEmits<{
   (e: 'add', item: Item): void
-}
-const emit = defineEmits<Emits>()
+}>()
 
-const validationSchema = {
-  content(v: string) {
-    if (!v) return '内容を入力してください'
-    if (!!v && v.length > props.max)
-      return `${props.max}文字以内で入力してください`
-    return true
-  },
-}
-const initialValues = { content: '' }
+// フォーム関連
 const { handleSubmit, resetForm } = useForm({
-  validationSchema,
-  initialValues,
+  validationSchema: {
+    content(v: string) {
+      if (!v) return '内容を入力してください'
+      if (!!v && v.length > props.max)
+        return `${props.max}文字以内で入力してください`
+      return true
+    },
+  },
+  initialValues: { content: '' },
 })
 const { value: contentValue, errorMessage: contentError } = useField('content')
 const isValid = useIsFormValid()
-const handleClickButton = handleSubmit((v) => {
-  const newItem = { id: uuid(), value: v.content }
+
+const handleClickButton = handleSubmit((fields) => {
+  const newItem = { id: uuid(), value: fields.content }
   emit('add', newItem)
   resetForm()
 })
 
+// その他
 const testMethod = () => {
   console.log('testMethod')
 }
@@ -41,6 +42,7 @@ defineExpose({ testMethod })
   <v-form v-model="isValid" @submit.prevent="handleClickButton">
     <v-text-field
       v-model="contentValue"
+      autocomplete="off"
       :error-messages="contentError"
       label="内容"
       hide-details="auto"
