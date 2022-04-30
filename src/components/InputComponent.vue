@@ -16,10 +16,15 @@ const contentRules: ((v: string) => string | true)[] = [
 ]
 const isValid = ref(true)
 const form = ref()
-const validate = () => {
-  nextTick(() => {
-    form.value.validate()
-  })
+const validate = ({ target }: Event) => {
+  if (target instanceof HTMLInputElement) {
+    // contentValue.value = target.value
+    nextTick(() => {
+      if (!target.value || contentValue.value) {
+        form.value.validate()
+      }
+    })
+  }
 }
 
 const handleClickButton = async () => {
