@@ -11,6 +11,7 @@ const emit = defineEmits<{
 
 // フォーム関連
 const { handleSubmit, resetForm } = useForm({
+  initialValues: { content: '', isAgree: false },
   validationSchema: {
     content(v: string) {
       if (!v) return '内容を入力してください'
@@ -18,10 +19,14 @@ const { handleSubmit, resetForm } = useForm({
         return `${props.max}文字以内で入力してください`
       return true
     },
+    isAgree(v: boolean) {
+      if (!v) return '同意してください'
+      return true
+    },
   },
-  initialValues: { content: '' },
 })
 const { value: contentValue, errorMessage: contentError } = useField('content')
+const { value: isAgreeValue, errorMessage: isAgreeError } = useField('isAgree')
 const isValid = useIsFormValid()
 
 const handleClickButton = handleSubmit((fields) => {
@@ -47,11 +52,15 @@ defineExpose({ testMethod })
       label="内容"
       hide-details="auto"
     />
-    <div class="mt-2">
-      <v-btn class="ma-2" color="primary" :disabled="!isValid" type="submit">
-        追加
-      </v-btn>
-      <v-btn class="ma-2" @click="resetForm()">リセット</v-btn>
-    </div>
+    <v-checkbox
+      v-model="isAgreeValue"
+      :error-messages="isAgreeError"
+      label="同意する"
+      hide-details="auto"
+    ></v-checkbox>
+    <v-btn class="ma-2" color="primary" :disabled="!isValid" type="submit">
+      追加
+    </v-btn>
+    <v-btn class="ma-2" @click="resetForm()">リセット</v-btn>
   </form>
 </template>
