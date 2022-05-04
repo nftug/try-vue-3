@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { v4 as uuid } from 'uuid'
-import type { Item, Id } from '@/interfaces'
+import type { Item, Id } from '@/typings'
 
 export const useContentsStore = defineStore('contents', {
   state: () => ({

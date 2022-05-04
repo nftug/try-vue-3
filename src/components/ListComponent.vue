@@ -1,11 +1,16 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useContentsStore } from '@/store/contents'
-import type { Id } from '@/interfaces'
+import type { Id } from '@/typings'
+import Dialog from '@/components/Dialog.vue'
 
 const store = useContentsStore()
+const itemDeleteDialog = ref<InstanceType<typeof Dialog>>()
 
-const handleClickDelete = (id: Id) => {
-  store.deleteItem(id)
+const handleClickDelete = async (id: Id) => {
+  if (await itemDeleteDialog.value?.showDialog()) {
+    store.deleteItem(id)
+  }
 }
 </script>
 
@@ -30,4 +35,11 @@ const handleClickDelete = (id: Id) => {
       </tr>
     </tbody>
   </v-table>
+
+  <Dialog
+    ref="itemDeleteDialog"
+    hash="delete-item"
+    title="削除の確認"
+    message="削除しますか？"
+  ></Dialog>
 </template>

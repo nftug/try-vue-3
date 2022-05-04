@@ -1,0 +1,150 @@
+<script setup lang="ts">
+import { getCurrentInstance, nextTick, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+// Props & Emits
+// BUG: fullscreen=trueでないとmaxWidthやwidthの設定が効かない
+interface Props {
+  title?: string | null
+  message?: string | null
+  maxWidth?: number | string
+  labelOk?: string
+  labelCancel?: string
+  formValid?: boolean
+  noTemplate?: boolean
+  hash?: string | null
+}
+const props = withDefaults(defineProps<Props>(), {
+  title: undefined,
+  message: undefined,
+  maxWidth: 350,
+  labelOk: 'OK',
+  labelCancel: 'キャンセル',
+  formValid: true,
+  noTemplate: false,
+  hash: undefined,
+})
+
+const emit = defineEmits<{
+  (e: 'answered-dialog', value: boolean | null): void
+  (e: 'show'): void
+}>()
+
+const dialog = ref(false)
+const answer = ref<boolean | null | undefined>(undefined)
+const route = useRoute()
+const router = useRouter()
+const { proxy } = getCurrentInstance()!
+
+watch(
+  () => route.hash,
+  (newHash, oldHash) => {
+    // ブラウザの戻るボタンを押した時、ダイアログを閉じる
+    const isDiffHash = props.hash && oldHash === `#${props.hash}`
+    if (isDiffHash && proxy?.$isBrowserBack) {
+      dialog.value = false
+      answer.value = null
+    }
+  }
+)
+
+watch(dialog, async (newVal) => {
+  const hasRouteHash = route.hash == `#${props.hash}`
+  if (props.hash) {
+    if (newVal && !hasRouteHash) {
+      await router.push({ ...route, hash: `#${props.hash}` })
+    } else if (!newVal && hasRouteHash) {
+      await router.go(-1)
+    }
+  }
+
+  if (newVal) emit('show')
+
+  nextTick(() => {
+    answer.value = undefined
+  })
+})
+
+const showDialog = (): Promise<boolean | null> => {
+  dialog.value = true
+  return new Promise((resolve) => {
+    watch(
+      answer,
+      (value) => {
+        if (value !== undefined) {
+          dialog.value = false
+          resolve(value)
+        }
+      },
+      { immediate: false }
+    )
+  })
+}
+
+const handleAnswer = (value: boolean | null) => {
+  answer.value = value
+}
+
+defineExpose({ showDialog })
+</script>
+
+<template>
+  <v-dialog v-model="dialog" :max-width="props.maxWidth">
+    <template #activator="{ isActive }">
+      <slot name="activator" :is-active="isActive"></slot>
+    </template>
+
+    <v-card tile>
+      <!-- フルスクリーンダイアログ -->
+      <template v-if="noTemplate">
+        <slot
+          name="default"
+          :title="title"
+          :ok="handleAnswer.bind(null, true)"
+          :cancel="handleAnswer.bind(null, false)"
+        ></slot>
+      </template>
+
+      <!-- 通常のダイアログ -->
+      <template v-else>
+        <slot name="title" :title="title">
+          <v-card-title class="text-h5" primary-title>
+            {{ title }}
+          </v-card-title>
+        </slot>
+
+        <v-card-text>
+          <slot
+            name="default"
+            :message="message"
+            :ok="handleAnswer.bind(null, true)"
+            :cancel="handleAnswer.bind(null, false)"
+          >
+            <p>{{ message }}</p>
+          </slot>
+        </v-card-text>
+
+        <v-card-actions>
+          <slot
+            name="actions"
+            :ok="handleAnswer.bind(null, true)"
+            :cancel="handleAnswer.bind(null, false)"
+          >
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" text @click="handleAnswer(false)">
+              {{ labelCancel }}
+            </v-btn>
+            <v-btn
+              color="green darken-1"
+              text
+              :disabled="!formValid"
+              @click="handleAnswer(true)"
+            >
+              {{ labelOk }}
+            </v-btn>
+          </slot>
+        </v-card-actions>
+      </template>
+    </v-card>
+  </v-dialog>
+</template>
