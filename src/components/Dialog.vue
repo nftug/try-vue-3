@@ -2,13 +2,13 @@
 import { getCurrentInstance, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { TinyEmitter } from 'tiny-emitter'
+import { useDisplay } from 'vuetify'
 
 // Props & Emits
-// BUG: fullscreen=trueでないとmaxWidthやwidthの設定が効かない
 interface Props {
   title?: string | null
   message?: string | null
-  maxWidth?: number | string
+  width?: number | string
   labelOk?: string
   labelCancel?: string
   formValid?: boolean
@@ -18,7 +18,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   title: undefined,
   message: undefined,
-  maxWidth: 350,
+  width: 350,
   labelOk: 'OK',
   labelCancel: 'キャンセル',
   formValid: true,
@@ -33,6 +33,7 @@ const emit = defineEmits<{
 
 // Variables
 const dialog = ref(false)
+const display = useDisplay()
 const [route, router] = [useRoute(), useRouter()]
 const { proxy } = getCurrentInstance()!
 const emitter = new TinyEmitter()
@@ -82,16 +83,16 @@ const handleAnswer = (value: boolean | null) => {
   emitter.emit('answer', value)
 }
 
-defineExpose({ showDialog })
+defineExpose({ showDialog, handleAnswer })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :max-width="props.maxWidth">
+  <v-dialog v-model="dialog" v-bind="$attrs">
     <template #activator="{ isActive }">
       <slot name="activator" :is-active="isActive"></slot>
     </template>
 
-    <v-card tile>
+    <v-card tile :width="props.width" :max-width="display.width.value - 20">
       <!-- フルスクリーンダイアログ -->
       <template v-if="noTemplate">
         <slot
@@ -105,12 +106,12 @@ defineExpose({ showDialog })
       <!-- 通常のダイアログ -->
       <template v-else>
         <slot name="title" :title="title">
-          <v-card-title class="text-h5" primary-title>
+          <v-card-title class="mt-2 text-h5" primary-title>
             {{ title }}
           </v-card-title>
         </slot>
 
-        <v-card-text>
+        <v-card-text class="text-body-2">
           <slot
             name="default"
             :message="message"

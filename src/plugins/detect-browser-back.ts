@@ -5,7 +5,7 @@ export default {
     app.config.globalProperties.$isBrowserBack = false
     history.replaceState(null, '', null)
 
-    window.addEventListener('popstate', () => {
+    addEventListener('popstate', () => {
       app.config.globalProperties.$isBrowserBack = true
       setTimeout(() => {
         app.config.globalProperties.$isBrowserBack = false
