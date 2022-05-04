@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getCurrentInstance, nextTick, ref, watch } from 'vue'
+import { getCurrentInstance, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 // Props & Emits
@@ -26,23 +26,24 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'answered-dialog', value: boolean | null): void
   (e: 'show'): void
+  (e: 'mount'): void
 }>()
 
+// Variables
 const dialog = ref(false)
 const answer = ref<boolean | null | undefined>(undefined)
 const route = useRoute()
 const router = useRouter()
 const { proxy } = getCurrentInstance()!
 
+// Watch & onMounted
 watch(
   () => route.hash,
   (newHash, oldHash) => {
     // ブラウザの戻るボタンを押した時、ダイアログを閉じる
     const isDiffHash = props.hash && oldHash === `#${props.hash}`
     if (isDiffHash && proxy?.$isBrowserBack) {
-      dialog.value = false
       answer.value = null
     }
   }
@@ -65,6 +66,11 @@ watch(dialog, async (newVal) => {
   })
 })
 
+onMounted(() => {
+  emit('mount')
+})
+
+// Methods
 const showDialog = (): Promise<boolean | null> => {
   dialog.value = true
   return new Promise((resolve) => {
