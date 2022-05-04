@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { getCurrentInstance, nextTick, onMounted, ref, watch } from 'vue'
+import { getCurrentInstance, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { TinyEmitter } from 'tiny-emitter'
 
 // Props & Emits
 // BUG: fullscreen=trueでないとmaxWidthやwidthの設定が効かない
@@ -32,19 +33,18 @@ const emit = defineEmits<{
 
 // Variables
 const dialog = ref(false)
-const answer = ref<boolean | null | undefined>(undefined)
-const route = useRoute()
-const router = useRouter()
+const [route, router] = [useRoute(), useRouter()]
 const { proxy } = getCurrentInstance()!
+const emitter = new TinyEmitter()
 
-// Watch & onMounted
+// Watch
 watch(
   () => route.hash,
   (newHash, oldHash) => {
     // ブラウザの戻るボタンを押した時、ダイアログを閉じる
     const isDiffHash = props.hash && oldHash === `#${props.hash}`
     if (isDiffHash && proxy?.$isBrowserBack) {
-      answer.value = null
+      emitter.emit('answer', null)
     }
   }
 )
@@ -60,12 +60,9 @@ watch(dialog, async (newVal) => {
   }
 
   if (newVal) emit('show')
-
-  nextTick(() => {
-    answer.value = undefined
-  })
 })
 
+// onMounted
 onMounted(() => {
   emit('mount')
 })
@@ -74,21 +71,15 @@ onMounted(() => {
 const showDialog = (): Promise<boolean | null> => {
   dialog.value = true
   return new Promise((resolve) => {
-    watch(
-      answer,
-      (value) => {
-        if (value !== undefined) {
-          dialog.value = false
-          resolve(value)
-        }
-      },
-      { immediate: false }
-    )
+    emitter.once('answer', (value: boolean) => {
+      dialog.value = false
+      resolve(value)
+    })
   })
 }
 
 const handleAnswer = (value: boolean | null) => {
-  answer.value = value
+  emitter.emit('answer', value)
 }
 
 defineExpose({ showDialog })
