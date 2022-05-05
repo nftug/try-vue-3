@@ -48,8 +48,8 @@ const handleClickDelete = async (id: Id) => {
   >
     <p>次のアイテムを削除しますか？</p>
     <ul class="mt-3 ml-3">
-      <li>ID: {{ currentItem?.id }}</li>
-      <li>内容: {{ currentItem?.content }}</li>
+      <li>ID: {{ currentItem!.id }}</li>
+      <li>内容: {{ currentItem!.content }}</li>
     </ul>
   </Dialog>
 </template>

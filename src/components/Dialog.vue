@@ -44,7 +44,7 @@ watch(
   (newHash, oldHash) => {
     // ブラウザの戻るボタンを押した時、ダイアログを閉じる
     const isDiffHash = props.hash && oldHash === `#${props.hash}`
-    if (isDiffHash && proxy?.$isBrowserBack) {
+    if (isDiffHash && proxy!.$isBrowserBack) {
       emitter.emit('answer', null)
     }
   }
@@ -72,8 +72,6 @@ onMounted(() => {
 const showDialog = (
   cb?: (value?: boolean) => void
 ): Promise<boolean | null> => {
-  dialog.value = true
-
   const waitAnswer = (resolve: (value: boolean | null) => void) => {
     emitter.once('answer', (value: boolean) => {
       if (value === true && cb !== undefined) {
@@ -92,6 +90,7 @@ const showDialog = (
     })
   }
 
+  dialog.value = true
   return new Promise((resolve) => {
     waitAnswer(resolve)
   })
