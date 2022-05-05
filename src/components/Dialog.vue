@@ -69,13 +69,31 @@ onMounted(() => {
 })
 
 // Methods
-const showDialog = (): Promise<boolean | null> => {
+const showDialog = (
+  cb?: (value?: boolean) => void
+): Promise<boolean | null> => {
   dialog.value = true
-  return new Promise((resolve) => {
+
+  const waitAnswer = (resolve: (value: boolean | null) => void) => {
     emitter.once('answer', (value: boolean) => {
+      if (value === true && cb !== undefined) {
+        try {
+          // 値チェック用のコールバック関数を実行
+          cb(value)
+        } catch (error) {
+          // コールバック内で例外発生時には再度待機に復帰する
+          waitAnswer(resolve)
+          throw error
+        }
+      }
+
       dialog.value = false
       resolve(value)
     })
+  }
+
+  return new Promise((resolve) => {
+    waitAnswer(resolve)
   })
 }
 
