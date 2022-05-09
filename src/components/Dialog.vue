@@ -26,10 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
   hash: undefined,
 })
 
-const emit = defineEmits<{
-  (e: 'show'): void
-  (e: 'mount'): void
-}>()
+const emit = defineEmits(['show', 'mount'])
 
 // Variables
 const dialog = ref(false)
@@ -51,8 +48,8 @@ watch(
 )
 
 watch(dialog, async (newVal) => {
-  const hasRouteHash = route.hash == `#${props.hash}`
   if (props.hash) {
+    const hasRouteHash = route.hash === `#${props.hash}`
     if (newVal && !hasRouteHash) {
       await router.push({ ...route, hash: `#${props.hash}` })
     } else if (!newVal && hasRouteHash) {
@@ -70,14 +67,14 @@ onMounted(() => {
 
 // Methods
 const showDialog = (
-  cb?: (value?: boolean) => void
+  checkFunc?: (value?: boolean) => void
 ): Promise<boolean | null> => {
   const waitAnswer = (resolve: (value: boolean | null) => void) => {
-    emitter.once('answer', (value: boolean) => {
-      if (value === true && cb !== undefined) {
+    emitter.once('answer', (value: boolean | null) => {
+      if (checkFunc !== undefined && value) {
         try {
           // 値チェック用のコールバック関数を実行
-          cb(value)
+          checkFunc(value)
         } catch (error) {
           // コールバック内で例外発生時には再度待機に復帰する
           waitAnswer(resolve)
